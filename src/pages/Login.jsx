@@ -58,7 +58,7 @@ function Login() {
       if (!result.approved) {
         navigate('/verify')
       } else {
-        navigate('/verify?status=success')
+        navigate('/dashboard')
       }
     } catch (err) {
       setErrors({ submit: 'Something went wrong. Please try again.' })

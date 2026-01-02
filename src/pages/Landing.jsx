@@ -4029,7 +4029,6 @@ const HomePage = ({ setCurrentPage, user }) => {
           </h1>
           <p style={{
             fontSize: 'clamp(36px, 5vw, 64px)',
-            fontStyle: 'italic',
             fontWeight: 700,
             lineHeight: 1.1,
             margin: '0 0 24px',
@@ -4091,7 +4090,7 @@ const HomePage = ({ setCurrentPage, user }) => {
           {/* CTA Buttons */}
           <div className="hero-cta-buttons" style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
             <button
-              onClick={() => setCurrentPage('request-access')}
+              onClick={() => navigate('/register')}
               style={{
                 background: '#FFFFFF',
                 color: imacs.primary,

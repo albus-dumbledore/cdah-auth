@@ -116,10 +116,10 @@ function Register() {
   return (
     <AuthLayout>
       <div className="auth-header" style={{ textAlign: 'left' }}>
-        <div className="auth-header__eyebrow">IMACS Platform</div>
-        <h1 className="auth-header__title">Request API Access</h1>
+        <div className="auth-header__eyebrow">IMACS CDAH Platform</div>
+        <h1 className="auth-header__title">Request Access</h1>
         <p className="auth-header__subtitle">
-          Access to the IMACS Platform is provisioned via API key after credential review.
+          Access to the IMACS CDAH Platform is provisioned after credential review.
           Please provide the following information to request access.
         </p>
       </div>
