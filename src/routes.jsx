@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Verify from './pages/Verify'
 import Dashboard from './pages/Dashboard'
+import Examples from './pages/Examples'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function AppRoutes() {
@@ -21,6 +22,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/examples"
+        element={
+          <ProtectedRoute>
+            <Examples />
           </ProtectedRoute>
         }
       />

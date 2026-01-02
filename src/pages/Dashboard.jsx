@@ -12,7 +12,7 @@ const PLATFORMS = [
     color: '#5E35B1',
     bgGradient: 'linear-gradient(135deg, #5E35B1 0%, #7E57C2 100%)',
     features: ['24 Intelligence Cards', 'Outbreak Prediction', 'Risk Assessment', 'Visual Analytics'],
-    url: 'https://main.d2x4w7vprzqp2a.amplifyapp.com', // Intelligence Platform URL
+    url: 'https://main.d2x4w7vprzqp2a.amplifyapp.com',
     requiredRole: ['user', 'admin', 'public-health-officer', 'analyst', 'developer', 'program-manager']
   },
   {
@@ -23,15 +23,26 @@ const PLATFORMS = [
     color: '#00695C',
     bgGradient: 'linear-gradient(135deg, #00695C 0%, #00897B 100%)',
     features: ['7 Data Domains', 'REST APIs', 'Feature Store', 'SDK Access'],
-    url: 'https://main.dqikf968gxxjc.amplifyapp.com', // Data Fabric Platform URL
+    url: 'https://main.dqikf968gxxjc.amplifyapp.com',
     requiredRole: ['user', 'admin', 'analyst', 'developer', 'program-manager']
   }
 ]
+
+// Helper to get user initials
+const getInitials = (name) => {
+  if (!name) return '?'
+  const parts = name.split(' ')
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  }
+  return name.substring(0, 2).toUpperCase()
+}
 
 function Dashboard() {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [hoveredCard, setHoveredCard] = useState(null)
 
   useEffect(() => {
     const loadUser = async () => {
@@ -106,83 +117,175 @@ function Dashboard() {
       {/* Header */}
       <header style={{
         background: '#FFFFFF',
-        borderBottom: '1px solid #E2E8F0',
-        padding: '16px 24px',
+        borderBottom: '1px solid #E5E7EB',
+        padding: '0 32px',
+        height: 64,
         position: 'sticky',
         top: 0,
-        zIndex: 100
+        zIndex: 100,
+        display: 'flex',
+        alignItems: 'center'
       }}>
         <div style={{
-          maxWidth: 1200,
+          width: '100%',
+          maxWidth: 1400,
           margin: '0 auto',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
+          {/* Left: Logo and Navigation */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <img
+              src="/logo.png"
+              alt="IMACS"
+              style={{ height: 36, width: 'auto' }}
+            />
             <div style={{
-              width: 40,
-              height: 40,
-              background: 'linear-gradient(135deg, #003366 0%, #00695C 100%)',
-              borderRadius: 8,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
-              <span className="material-symbols-outlined" style={{ color: '#FFFFFF', fontSize: 24 }}>
-                shield
-              </span>
-            </div>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: '#0F172A' }}>IMACS CDAH</div>
-              <div style={{ fontSize: 12, color: '#64748B' }}>Platform Hub</div>
-            </div>
+              width: 1,
+              height: 24,
+              background: '#E5E7EB',
+              margin: '0 8px'
+            }} />
+            {/* Tab Navigation */}
+            <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <button
+                onClick={() => navigate('/dashboard')}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  padding: '8px 16px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: '#003366',
+                  cursor: 'pointer',
+                  borderRadius: 6,
+                  position: 'relative'
+                }}
+              >
+                Platform Hub
+                <span style={{
+                  position: 'absolute',
+                  bottom: -2,
+                  left: 16,
+                  right: 16,
+                  height: 2,
+                  background: '#003366',
+                  borderRadius: 1
+                }} />
+              </button>
+              <button
+                onClick={() => navigate('/examples')}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  padding: '8px 16px',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: '#6B7280',
+                  cursor: 'pointer',
+                  borderRadius: 6,
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#374151'
+                  e.currentTarget.style.background = '#F3F4F6'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#6B7280'
+                  e.currentTarget.style.background = 'transparent'
+                }}
+              >
+                Examples
+              </button>
+            </nav>
           </div>
 
+          {/* Right: User Profile Cluster & Sign Out */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>{user?.name}</div>
-              <div style={{ fontSize: 12, color: '#64748B' }}>{user?.org}</div>
-            </div>
+            {/* User Profile Cluster */}
             <div style={{
-              width: 40,
-              height: 40,
-              background: '#E2E8F0',
-              borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 16,
-              fontWeight: 600,
-              color: '#475569'
+              gap: 12,
+              padding: '8px 16px 8px 8px',
+              background: '#F9FAFB',
+              borderRadius: 8,
+              border: '1px solid #E5E7EB'
             }}>
-              {user?.name?.charAt(0)?.toUpperCase()}
+              {/* Avatar Circle */}
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #003366 0%, #00695C 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#FFFFFF',
+                fontSize: 13,
+                fontWeight: 600,
+                letterSpacing: '0.02em'
+              }}>
+                {getInitials(user?.name)}
+              </div>
+              {/* Name and Role */}
+              <div>
+                <div style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: '#111827',
+                  lineHeight: 1.3
+                }}>
+                  {user?.name}
+                </div>
+                <div style={{
+                  fontSize: 12,
+                  color: '#6B7280',
+                  textTransform: 'capitalize',
+                  lineHeight: 1.3
+                }}>
+                  {user?.role?.replace(/-/g, ' ')}
+                </div>
+              </div>
             </div>
+
+            {/* Divider */}
+            <div style={{
+              width: 1,
+              height: 32,
+              background: '#E5E7EB'
+            }} />
+
+            {/* Sign Out Button */}
             <button
               onClick={handleLogout}
               style={{
-                background: 'none',
-                border: '1px solid #E2E8F0',
-                borderRadius: 8,
+                background: 'transparent',
+                border: '1px solid #D1D5DB',
+                borderRadius: 6,
                 padding: '8px 16px',
-                fontSize: 14,
-                color: '#64748B',
+                fontSize: 13,
+                fontWeight: 500,
+                color: '#6B7280',
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 6,
-                transition: 'all 0.2s'
+                gap: 6
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#CBD5E1'
-                e.currentTarget.style.color = '#475569'
+                e.currentTarget.style.background = '#F9FAFB'
+                e.currentTarget.style.borderColor = '#9CA3AF'
+                e.currentTarget.style.color = '#374151'
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#E2E8F0'
-                e.currentTarget.style.color = '#64748B'
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.borderColor = '#D1D5DB'
+                e.currentTarget.style.color = '#6B7280'
               }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>logout</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>logout</span>
               Sign Out
             </button>
           </div>
@@ -192,13 +295,14 @@ function Dashboard() {
       {/* Main Content */}
       <main style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px' }}>
         {/* Welcome Section */}
-        <div style={{ marginBottom: 48 }}>
+        <div style={{ marginBottom: 40 }}>
           <div style={{
-            fontSize: 12,
-            fontWeight: 500,
+            fontSize: 11,
+            fontWeight: 600,
             color: '#00695C',
-            letterSpacing: '0.05em',
-            marginBottom: 8
+            letterSpacing: '0.08em',
+            marginBottom: 8,
+            textTransform: 'uppercase'
           }}>
             IMACS CDAH PLATFORM
           </div>
@@ -206,28 +310,96 @@ function Dashboard() {
             fontSize: 32,
             fontWeight: 700,
             color: '#0F172A',
-            margin: '0 0 8px'
+            margin: '0 0 12px'
           }}>
-            Welcome back, {user?.name?.split(' ')[0]}
+            Welcome back, {user?.name}
           </h1>
           <p style={{
             fontSize: 16,
             color: '#64748B',
             margin: 0,
-            maxWidth: 600
+            maxWidth: 640,
+            lineHeight: 1.6
           }}>
-            Access climate-driven health analytics platforms. Select a platform below to get started.
+            Access climate-driven health analytics platforms to support planning, preparedness, and decision-making.
           </p>
+        </div>
+
+        {/* Account Information */}
+        <div style={{
+          marginBottom: 40,
+          background: '#FFFFFF',
+          borderRadius: 12,
+          padding: 20,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
+        }}>
+          <h3 style={{
+            fontSize: 11,
+            fontWeight: 600,
+            color: '#64748B',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            margin: '0 0 16px'
+          }}>
+            Account Information
+          </h3>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: 20
+          }}>
+            <div>
+              <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.03em' }}>Role</div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', textTransform: 'capitalize' }}>
+                {user?.role?.replace(/-/g, ' ')}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.03em' }}>Email</div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
+                {user?.email}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.03em' }}>Organization</div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
+                {user?.org || 'Not specified'}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.03em' }}>Status</div>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '3px 10px',
+                background: '#DCFCE7',
+                borderRadius: 16,
+                fontSize: 12,
+                fontWeight: 500,
+                color: '#16A34A'
+              }}>
+                <span style={{
+                  width: 5,
+                  height: 5,
+                  background: '#16A34A',
+                  borderRadius: '50%'
+                }} />
+                Approved
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Platform Cards */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+          gridTemplateColumns: 'repeat(2, 1fr)',
           gap: 24
         }}>
           {PLATFORMS.map((platform) => {
             const hasAccess = canAccessPlatform(platform)
+            const isHovered = hoveredCard === platform.id && hasAccess
 
             return (
               <div
@@ -236,26 +408,22 @@ function Dashboard() {
                   background: '#FFFFFF',
                   borderRadius: 16,
                   overflow: 'hidden',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)',
-                  transition: 'all 0.3s ease',
+                  boxShadow: isHovered
+                    ? '0 20px 40px -12px rgba(0,0,0,0.15)'
+                    : '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)',
+                  transition: 'all 0.25s ease',
                   opacity: hasAccess ? 1 : 0.6,
-                  cursor: hasAccess ? 'pointer' : 'not-allowed'
+                  transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+                  display: 'flex',
+                  flexDirection: 'column'
                 }}
-                onMouseEnter={(e) => {
-                  if (hasAccess) {
-                    e.currentTarget.style.transform = 'translateY(-4px)'
-                    e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)'
-                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)'
-                }}
+                onMouseEnter={() => setHoveredCard(platform.id)}
+                onMouseLeave={() => setHoveredCard(null)}
               >
                 {/* Card Header */}
                 <div style={{
                   background: platform.bgGradient,
-                  padding: '32px 24px',
+                  padding: '28px 24px',
                   position: 'relative',
                   overflow: 'hidden'
                 }}>
@@ -264,8 +432,8 @@ function Dashboard() {
                     position: 'absolute',
                     top: -50,
                     right: -50,
-                    width: 200,
-                    height: 200,
+                    width: 180,
+                    height: 180,
                     background: 'rgba(255,255,255,0.1)',
                     borderRadius: '50%'
                   }} />
@@ -273,29 +441,29 @@ function Dashboard() {
                     position: 'absolute',
                     bottom: -30,
                     left: -30,
-                    width: 100,
-                    height: 100,
+                    width: 90,
+                    height: 90,
                     background: 'rgba(255,255,255,0.05)',
                     borderRadius: '50%'
                   }} />
 
                   <div style={{ position: 'relative', zIndex: 1 }}>
                     <div style={{
-                      width: 56,
-                      height: 56,
+                      width: 48,
+                      height: 48,
                       background: 'rgba(255,255,255,0.2)',
-                      borderRadius: 12,
+                      borderRadius: 10,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      marginBottom: 16
+                      marginBottom: 14
                     }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 28, color: '#FFFFFF' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 24, color: '#FFFFFF' }}>
                         {platform.icon}
                       </span>
                     </div>
                     <h2 style={{
-                      fontSize: 24,
+                      fontSize: 22,
                       fontWeight: 700,
                       color: '#FFFFFF',
                       margin: 0
@@ -306,33 +474,39 @@ function Dashboard() {
                 </div>
 
                 {/* Card Body */}
-                <div style={{ padding: 24 }}>
+                <div style={{
+                  padding: 24,
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
                   <p style={{
                     fontSize: 14,
                     color: '#64748B',
                     lineHeight: 1.6,
-                    margin: '0 0 20px'
+                    margin: '0 0 16px'
                   }}>
                     {platform.description}
                   </p>
 
-                  {/* Features */}
+                  {/* Features - subdued styling */}
                   <div style={{
                     display: 'flex',
                     flexWrap: 'wrap',
-                    gap: 8,
-                    marginBottom: 24
+                    gap: 6,
+                    marginBottom: 'auto',
+                    paddingBottom: 20
                   }}>
                     {platform.features.map((feature, i) => (
                       <span
                         key={i}
                         style={{
-                          padding: '4px 12px',
-                          background: `${platform.color}10`,
-                          color: platform.color,
-                          fontSize: 12,
+                          padding: '3px 10px',
+                          background: '#F1F5F9',
+                          color: '#64748B',
+                          fontSize: 11,
                           fontWeight: 500,
-                          borderRadius: 20
+                          borderRadius: 12
                         }}
                       >
                         {feature}
@@ -340,7 +514,7 @@ function Dashboard() {
                     ))}
                   </div>
 
-                  {/* Action Button */}
+                  {/* Action Button - aligned at bottom */}
                   {hasAccess ? (
                     <a
                       href={getPlatformUrl(platform)}
@@ -349,7 +523,9 @@ function Dashboard() {
                       style={{
                         width: '100%',
                         padding: '14px 24px',
-                        background: platform.bgGradient,
+                        background: isHovered
+                          ? `linear-gradient(135deg, ${platform.color} 0%, ${platform.color}DD 100%)`
+                          : platform.bgGradient,
                         color: '#FFFFFF',
                         border: 'none',
                         borderRadius: 10,
@@ -360,9 +536,12 @@ function Dashboard() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: 8,
-                        transition: 'all 0.2s',
+                        transition: 'all 0.2s ease',
                         textDecoration: 'none',
-                        boxSizing: 'border-box'
+                        boxSizing: 'border-box',
+                        boxShadow: isHovered
+                          ? '0 4px 12px rgba(0,0,0,0.15)'
+                          : 'none'
                       }}
                     >
                       Launch Platform
@@ -399,72 +578,6 @@ function Dashboard() {
               </div>
             )
           })}
-        </div>
-
-        {/* Quick Stats */}
-        <div style={{
-          marginTop: 48,
-          background: '#FFFFFF',
-          borderRadius: 16,
-          padding: 24,
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-        }}>
-          <h3 style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: '#64748B',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            margin: '0 0 20px'
-          }}>
-            Account Information
-          </h3>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 24
-          }}>
-            <div>
-              <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 4 }}>Role</div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', textTransform: 'capitalize' }}>
-                {user?.role?.replace(/-/g, ' ')}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 4 }}>Email</div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
-                {user?.email}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 4 }}>Organization</div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
-                {user?.org || 'Not specified'}
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 4 }}>Status</div>
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '4px 12px',
-                background: '#DCFCE7',
-                borderRadius: 20,
-                fontSize: 13,
-                fontWeight: 500,
-                color: '#16A34A'
-              }}>
-                <span style={{
-                  width: 6,
-                  height: 6,
-                  background: '#16A34A',
-                  borderRadius: '50%'
-                }} />
-                Approved
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Help Section */}
