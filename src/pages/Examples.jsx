@@ -200,7 +200,7 @@ const SCENARIOS = [
 
 // Workflow Step Component
 const WorkflowStep = ({ step, isLast }) => (
-  <div style={{ display: 'flex', gap: 20 }}>
+  <div className="workflow-step" style={{ display: 'flex', gap: 20 }}>
     {/* Step Number */}
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div style={{
@@ -213,7 +213,8 @@ const WorkflowStep = ({ step, isLast }) => (
         alignItems: 'center',
         justifyContent: 'center',
         fontSize: 16,
-        fontWeight: 700
+        fontWeight: 700,
+        flexShrink: 0
       }}>
         {step.number}
       </div>
@@ -245,7 +246,7 @@ const WorkflowStep = ({ step, isLast }) => (
       }}>
         {step.description}
       </p>
-      <div style={{ display: 'flex', gap: 24 }}>
+      <div className="step-io" style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
         <div>
           <div style={{ fontSize: 10, fontWeight: 600, color: imacs.accent, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>INPUTS</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -312,17 +313,18 @@ const DecisionTypeCard = ({ type, isExpanded, onToggle }) => (
         background: `${type.color}15`,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        flexShrink: 0
       }}>
         <span className="material-symbols-outlined" style={{ fontSize: 24, color: type.color }}>
           {type.icon}
         </span>
       </div>
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
         <h4 style={{ fontSize: 15, fontWeight: 600, color: imacs.onSurface, margin: 0 }}>
           {type.title}
         </h4>
-        <p style={{ fontSize: 13, color: imacs.onSurfaceVariant, margin: '4px 0 0' }}>
+        <p className="decision-desc" style={{ fontSize: 13, color: imacs.onSurfaceVariant, margin: '4px 0 0' }}>
           {type.description}
         </p>
       </div>
@@ -330,7 +332,8 @@ const DecisionTypeCard = ({ type, isExpanded, onToggle }) => (
         fontSize: 24,
         color: imacs.onSurfaceVariant,
         transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)',
-        transition: 'transform 0.2s ease'
+        transition: 'transform 0.2s ease',
+        flexShrink: 0
       }}>
         expand_more
       </span>
@@ -354,7 +357,7 @@ const DecisionTypeCard = ({ type, isExpanded, onToggle }) => (
               padding: '8px 0',
               borderBottom: i < type.examples.length - 1 ? `1px solid ${imacs.outline}` : 'none'
             }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 16, color: type.color }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 16, color: type.color, flexShrink: 0 }}>
                 arrow_right
               </span>
               <span style={{ fontSize: 13, color: imacs.onSurfaceSecondary }}>{example}</span>
@@ -368,7 +371,7 @@ const DecisionTypeCard = ({ type, isExpanded, onToggle }) => (
 
 // Interactive Scenario Component
 const InteractiveScenario = ({ scenario }) => (
-  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 24 }}>
+  <div className="scenario-grid">
     {/* Scenario Column */}
     <div style={{
       background: imacs.surface,
@@ -426,7 +429,8 @@ const InteractiveScenario = ({ scenario }) => (
         }}>
           <span className="material-symbols-outlined" style={{
             fontSize: 18,
-            color: signal.status === 'alert' ? imacs.error : imacs.warning
+            color: signal.status === 'alert' ? imacs.error : imacs.warning,
+            flexShrink: 0
           }}>
             {signal.status === 'alert' ? 'error' : 'warning'}
           </span>
@@ -443,7 +447,7 @@ const InteractiveScenario = ({ scenario }) => (
         alignItems: 'flex-start',
         gap: 10
       }}>
-        <span className="material-symbols-outlined" style={{ fontSize: 18, color: imacs.warning }}>
+        <span className="material-symbols-outlined" style={{ fontSize: 18, color: imacs.warning, flexShrink: 0 }}>
           info
         </span>
         <div>
@@ -572,7 +576,8 @@ const InteractiveScenario = ({ scenario }) => (
             borderRadius: 4,
             textTransform: 'uppercase',
             whiteSpace: 'nowrap',
-            height: 'fit-content'
+            height: 'fit-content',
+            flexShrink: 0
           }}>
             {action.priority}
           </div>
@@ -591,6 +596,7 @@ function Examples() {
   const [loading, setLoading] = useState(true)
   const [expandedType, setExpandedType] = useState(null)
   const [selectedScenario, setSelectedScenario] = useState(SCENARIOS[0])
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const loadUser = async () => {
@@ -648,11 +654,113 @@ function Examples() {
 
   return (
     <div style={{ minHeight: '100vh', background: imacs.surfaceVariant }}>
+      {/* Responsive Styles */}
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .desktop-only { display: flex; }
+        .mobile-only { display: none; }
+        .desktop-nav { display: flex; }
+        .mobile-menu-btn { display: none; }
+
+        .main-content { padding: 48px 24px; }
+        .header-inner { padding: 0 32px; }
+        .welcome-title { font-size: 32px; }
+
+        .decision-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
+        }
+
+        .scenario-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 24px;
+        }
+
+        .scenario-selector {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .scenario-btn {
+          padding: 12px 20px;
+          font-size: 14px;
+        }
+
+        .support-section {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+        }
+
+        .support-icon { display: block; }
+
+        .section-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 16px;
+        }
+
+        .access-badge { display: flex; }
+
+        @media (max-width: 768px) {
+          .desktop-only { display: none !important; }
+          .mobile-only { display: flex !important; }
+          .desktop-nav { display: none !important; }
+          .mobile-menu-btn { display: flex !important; }
+
+          .main-content { padding: 24px 16px !important; }
+          .header-inner { padding: 0 16px !important; }
+          .welcome-title { font-size: 24px !important; }
+
+          .decision-grid {
+            grid-template-columns: 1fr !important;
+          }
+
+          .scenario-grid {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+
+          .scenario-selector {
+            flex-direction: column;
+          }
+
+          .scenario-btn {
+            padding: 10px 16px !important;
+            font-size: 13px !important;
+            text-align: left;
+          }
+
+          .support-section {
+            flex-direction: column !important;
+            text-align: center;
+          }
+
+          .support-icon { display: none !important; }
+
+          .section-header {
+            flex-direction: column;
+          }
+
+          .access-badge { display: none !important; }
+
+          .workflow-section { padding: 20px !important; }
+
+          .decision-desc {
+            display: none;
+          }
+        }
+      `}</style>
+
       {/* Header */}
       <header style={{
         background: '#FFFFFF',
         borderBottom: '1px solid #E5E7EB',
-        padding: '0 32px',
         height: 64,
         position: 'sticky',
         top: 0,
@@ -660,13 +768,14 @@ function Examples() {
         display: 'flex',
         alignItems: 'center'
       }}>
-        <div style={{
+        <div className="header-inner" style={{
           width: '100%',
           maxWidth: 1400,
           margin: '0 auto',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          padding: '0 32px'
         }}>
           {/* Left: Logo and Navigation */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -675,14 +784,14 @@ function Examples() {
               alt="IMACS"
               style={{ height: 36, width: 'auto' }}
             />
-            <div style={{
+            <div className="desktop-only" style={{
               width: 1,
               height: 24,
               background: '#E5E7EB',
               margin: '0 8px'
             }} />
-            {/* Tab Navigation */}
-            <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {/* Desktop Tab Navigation */}
+            <nav className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <button
                 onClick={() => navigate('/dashboard')}
                 style={{
@@ -734,10 +843,10 @@ function Examples() {
             </nav>
           </div>
 
-          {/* Right: User Profile Cluster & Sign Out */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            {/* User Profile Cluster */}
-            <div style={{
+          {/* Right: User Profile & Actions */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Desktop User Profile Cluster */}
+            <div className="desktop-only" style={{
               display: 'flex',
               alignItems: 'center',
               gap: 12,
@@ -746,7 +855,6 @@ function Examples() {
               borderRadius: 8,
               border: '1px solid #E5E7EB'
             }}>
-              {/* Avatar Circle */}
               <div style={{
                 width: 36,
                 height: 36,
@@ -762,40 +870,21 @@ function Examples() {
               }}>
                 {getInitials(user?.name)}
               </div>
-              {/* Name and Role */}
               <div>
-                <div style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: '#111827',
-                  lineHeight: 1.3
-                }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#111827', lineHeight: 1.3 }}>
                   {user?.name}
                 </div>
-                <div style={{
-                  fontSize: 12,
-                  color: '#6B7280',
-                  textTransform: 'capitalize',
-                  lineHeight: 1.3
-                }}>
+                <div style={{ fontSize: 12, color: '#6B7280', textTransform: 'capitalize', lineHeight: 1.3 }}>
                   {user?.role?.replace(/-/g, ' ')}
                 </div>
               </div>
             </div>
 
-            {/* Divider */}
-            <div style={{
-              width: 1,
-              height: 32,
-              background: '#E5E7EB'
-            }} />
+            <div className="desktop-only" style={{ width: 1, height: 32, background: '#E5E7EB' }} />
 
-            {/* Sign Out Button */}
             <button
-              onClick={() => {
-                logout()
-                navigate('/login')
-              }}
+              className="desktop-only"
+              onClick={() => { logout(); navigate('/login'); }}
               style={{
                 background: 'transparent',
                 border: '1px solid #D1D5DB',
@@ -824,14 +913,154 @@ function Examples() {
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>logout</span>
               Sign Out
             </button>
+
+            {/* Mobile: Avatar */}
+            <div className="mobile-only" style={{
+              width: 36,
+              height: 36,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #003366 0%, #00695C 100%)',
+              display: 'none',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              fontSize: 13,
+              fontWeight: 600
+            }}>
+              {getInitials(user?.name)}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="mobile-menu-btn"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              style={{
+                display: 'none',
+                background: 'transparent',
+                border: 'none',
+                padding: 8,
+                cursor: 'pointer',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 28, color: '#374151' }}>
+                {mobileMenuOpen ? 'close' : 'menu'}
+              </span>
+            </button>
           </div>
         </div>
       </header>
 
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 64,
+          left: 0,
+          right: 0,
+          background: '#FFFFFF',
+          borderBottom: '1px solid #E5E7EB',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          zIndex: 99,
+          padding: 16
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            padding: '12px 16px',
+            background: '#F9FAFB',
+            borderRadius: 8,
+            marginBottom: 12
+          }}>
+            <div style={{
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #003366 0%, #00695C 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              fontSize: 14,
+              fontWeight: 600
+            }}>
+              {getInitials(user?.name)}
+            </div>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: '#111827' }}>{user?.name}</div>
+              <div style={{ fontSize: 13, color: '#6B7280', textTransform: 'capitalize' }}>
+                {user?.role?.replace(/-/g, ' ')}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <button
+              onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: '12px 16px',
+                fontSize: 15,
+                fontWeight: 500,
+                color: '#374151',
+                cursor: 'pointer',
+                borderRadius: 8,
+                textAlign: 'left'
+              }}
+            >
+              Platform Hub
+            </button>
+            <button
+              onClick={() => { setMobileMenuOpen(false); }}
+              style={{
+                background: '#F3F4F6',
+                border: 'none',
+                padding: '12px 16px',
+                fontSize: 15,
+                fontWeight: 600,
+                color: '#003366',
+                cursor: 'pointer',
+                borderRadius: 8,
+                textAlign: 'left'
+              }}
+            >
+              Examples
+            </button>
+          </div>
+
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #E5E7EB' }}>
+            <button
+              onClick={() => { logout(); navigate('/login'); }}
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: '1px solid #D1D5DB',
+                borderRadius: 8,
+                padding: '12px 16px',
+                fontSize: 14,
+                fontWeight: 500,
+                color: '#6B7280',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>logout</span>
+              Sign Out
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
-      <main style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px' }}>
+      <main className="main-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px' }}>
         {/* Welcome Section */}
-        <div style={{ marginBottom: 40 }}>
+        <div style={{ marginBottom: 32 }}>
           <div style={{
             fontSize: 11,
             fontWeight: 600,
@@ -842,7 +1071,7 @@ function Examples() {
           }}>
             IMACS CDAH PLATFORM
           </div>
-          <h1 style={{
+          <h1 className="welcome-title" style={{
             fontSize: 32,
             fontWeight: 700,
             color: '#0F172A',
@@ -851,7 +1080,7 @@ function Examples() {
             Welcome back, {user?.name}
           </h1>
           <p style={{
-            fontSize: 16,
+            fontSize: 15,
             color: '#64748B',
             margin: 0,
             maxWidth: 640,
@@ -860,8 +1089,9 @@ function Examples() {
             Follow this workflow to move from a decision question to action using Decision Intelligence Cards.
           </p>
         </div>
+
         {/* Workflow Steps */}
-        <section style={{
+        <section className="workflow-section" style={{
           background: imacs.surface,
           borderRadius: 16,
           padding: 32,
@@ -891,7 +1121,7 @@ function Examples() {
             Decision Intelligence Cards support four types of public health decisions. Click each to learn how cards help.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+          <div className="decision-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
             {DECISION_TYPES.map((type) => (
               <DecisionTypeCard
                 key={type.id}
@@ -905,7 +1135,7 @@ function Examples() {
 
         {/* Interactive Example */}
         <section>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+          <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
             <div>
               <h2 style={{
                 fontSize: 24,
@@ -924,13 +1154,14 @@ function Examples() {
                 This is a simulated example to show how Decision Intelligence Cards present signals, uncertainty, and recommended actions in a standardized way.
               </p>
             </div>
-            <div style={{
+            <div className="access-badge" style={{
               display: 'flex',
               alignItems: 'center',
               gap: 8,
               padding: '8px 16px',
               background: imacs.successContainer,
-              borderRadius: 20
+              borderRadius: 20,
+              flexShrink: 0
             }}>
               <span className="material-symbols-outlined" style={{ fontSize: 18, color: imacs.success }}>check_circle</span>
               <span style={{ fontSize: 13, fontWeight: 500, color: imacs.success }}>Access: Approved</span>
@@ -948,10 +1179,11 @@ function Examples() {
             <div style={{ fontSize: 13, fontWeight: 600, color: imacs.onSurfaceVariant, marginBottom: 12 }}>
               Select a scenario:
             </div>
-            <div style={{ display: 'flex', gap: 12 }}>
+            <div className="scenario-selector" style={{ display: 'flex', gap: 12 }}>
               {SCENARIOS.map((scenario) => (
                 <button
                   key={scenario.id}
+                  className="scenario-btn"
                   onClick={() => setSelectedScenario(scenario)}
                   style={{
                     padding: '12px 20px',
@@ -976,7 +1208,7 @@ function Examples() {
         </section>
 
         {/* Support CTA */}
-        <section style={{
+        <section className="support-section" style={{
           marginTop: 48,
           padding: 32,
           background: imacs.surface,
@@ -986,14 +1218,15 @@ function Examples() {
           gap: 24,
           border: `1px solid ${imacs.outline}`
         }}>
-          <div style={{
+          <div className="support-icon" style={{
             width: 64,
             height: 64,
             borderRadius: 12,
             background: imacs.accentLighter,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            flexShrink: 0
           }}>
             <span className="material-symbols-outlined" style={{ fontSize: 32, color: imacs.accent }}>
               support_agent
@@ -1020,7 +1253,8 @@ function Examples() {
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: 8
+              gap: 8,
+              whiteSpace: 'nowrap'
             }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 18 }}>open_in_new</span>

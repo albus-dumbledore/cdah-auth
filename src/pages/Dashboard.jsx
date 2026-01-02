@@ -43,6 +43,7 @@ function Dashboard() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [hoveredCard, setHoveredCard] = useState(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const loadUser = async () => {
@@ -114,11 +115,98 @@ function Dashboard() {
       minHeight: '100vh',
       background: 'linear-gradient(180deg, #F8FAFC 0%, #E2E8F0 100%)'
     }}>
+      {/* Responsive Styles */}
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        .desktop-only {
+          display: flex;
+        }
+        .mobile-only {
+          display: none;
+        }
+        .desktop-nav {
+          display: flex;
+        }
+        .mobile-menu-btn {
+          display: none;
+        }
+        .platform-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 24px;
+        }
+        .account-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          gap: 20px;
+        }
+        .help-section {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 16px;
+        }
+        .welcome-title {
+          font-size: 32px;
+        }
+        .main-content {
+          padding: 48px 24px;
+        }
+        .header-inner {
+          padding: 0 32px;
+        }
+        .user-cluster-text {
+          display: block;
+        }
+
+        @media (max-width: 768px) {
+          .desktop-only {
+            display: none !important;
+          }
+          .mobile-only {
+            display: flex !important;
+          }
+          .desktop-nav {
+            display: none !important;
+          }
+          .mobile-menu-btn {
+            display: flex !important;
+          }
+          .platform-grid {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
+          .account-grid {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 16px !important;
+          }
+          .help-section {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .welcome-title {
+            font-size: 24px !important;
+          }
+          .main-content {
+            padding: 24px 16px !important;
+          }
+          .header-inner {
+            padding: 0 16px !important;
+          }
+          .user-cluster-text {
+            display: none !important;
+          }
+        }
+      `}</style>
+
       {/* Header */}
       <header style={{
         background: '#FFFFFF',
         borderBottom: '1px solid #E5E7EB',
-        padding: '0 32px',
         height: 64,
         position: 'sticky',
         top: 0,
@@ -126,13 +214,14 @@ function Dashboard() {
         display: 'flex',
         alignItems: 'center'
       }}>
-        <div style={{
+        <div className="header-inner" style={{
           width: '100%',
           maxWidth: 1400,
           margin: '0 auto',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          padding: '0 32px'
         }}>
           {/* Left: Logo and Navigation */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -141,14 +230,14 @@ function Dashboard() {
               alt="IMACS"
               style={{ height: 36, width: 'auto' }}
             />
-            <div style={{
+            <div className="desktop-only" style={{
               width: 1,
               height: 24,
               background: '#E5E7EB',
               margin: '0 8px'
             }} />
-            {/* Tab Navigation */}
-            <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {/* Desktop Tab Navigation */}
+            <nav className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <button
                 onClick={() => navigate('/dashboard')}
                 style={{
@@ -201,10 +290,10 @@ function Dashboard() {
             </nav>
           </div>
 
-          {/* Right: User Profile Cluster & Sign Out */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            {/* User Profile Cluster */}
-            <div style={{
+          {/* Right: User Profile & Actions */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Desktop User Profile Cluster */}
+            <div className="desktop-only" style={{
               display: 'flex',
               alignItems: 'center',
               gap: 12,
@@ -230,7 +319,7 @@ function Dashboard() {
                 {getInitials(user?.name)}
               </div>
               {/* Name and Role */}
-              <div>
+              <div className="user-cluster-text">
                 <div style={{
                   fontSize: 14,
                   fontWeight: 600,
@@ -250,15 +339,16 @@ function Dashboard() {
               </div>
             </div>
 
-            {/* Divider */}
-            <div style={{
+            {/* Desktop Divider */}
+            <div className="desktop-only" style={{
               width: 1,
               height: 32,
               background: '#E5E7EB'
             }} />
 
-            {/* Sign Out Button */}
+            {/* Desktop Sign Out Button */}
             <button
+              className="desktop-only"
               onClick={handleLogout}
               style={{
                 background: 'transparent',
@@ -288,14 +378,157 @@ function Dashboard() {
               <span className="material-symbols-outlined" style={{ fontSize: 16 }}>logout</span>
               Sign Out
             </button>
+
+            {/* Mobile: Avatar only */}
+            <div className="mobile-only" style={{
+              width: 36,
+              height: 36,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #003366 0%, #00695C 100%)',
+              display: 'none',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              fontSize: 13,
+              fontWeight: 600
+            }}>
+              {getInitials(user?.name)}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="mobile-menu-btn"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              style={{
+                display: 'none',
+                background: 'transparent',
+                border: 'none',
+                padding: 8,
+                cursor: 'pointer',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 28, color: '#374151' }}>
+                {mobileMenuOpen ? 'close' : 'menu'}
+              </span>
+            </button>
           </div>
         </div>
       </header>
 
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 64,
+          left: 0,
+          right: 0,
+          background: '#FFFFFF',
+          borderBottom: '1px solid #E5E7EB',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          zIndex: 99,
+          padding: 16
+        }}>
+          {/* User Info */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            padding: '12px 16px',
+            background: '#F9FAFB',
+            borderRadius: 8,
+            marginBottom: 12
+          }}>
+            <div style={{
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #003366 0%, #00695C 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              fontSize: 14,
+              fontWeight: 600
+            }}>
+              {getInitials(user?.name)}
+            </div>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: '#111827' }}>{user?.name}</div>
+              <div style={{ fontSize: 13, color: '#6B7280', textTransform: 'capitalize' }}>
+                {user?.role?.replace(/-/g, ' ')}
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Links */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <button
+              onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }}
+              style={{
+                background: '#F3F4F6',
+                border: 'none',
+                padding: '12px 16px',
+                fontSize: 15,
+                fontWeight: 600,
+                color: '#003366',
+                cursor: 'pointer',
+                borderRadius: 8,
+                textAlign: 'left'
+              }}
+            >
+              Platform Hub
+            </button>
+            <button
+              onClick={() => { navigate('/examples'); setMobileMenuOpen(false); }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: '12px 16px',
+                fontSize: 15,
+                fontWeight: 500,
+                color: '#374151',
+                cursor: 'pointer',
+                borderRadius: 8,
+                textAlign: 'left'
+              }}
+            >
+              Examples
+            </button>
+          </div>
+
+          {/* Sign Out */}
+          <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #E5E7EB' }}>
+            <button
+              onClick={handleLogout}
+              style={{
+                width: '100%',
+                background: 'transparent',
+                border: '1px solid #D1D5DB',
+                borderRadius: 8,
+                padding: '12px 16px',
+                fontSize: 14,
+                fontWeight: 500,
+                color: '#6B7280',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>logout</span>
+              Sign Out
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
-      <main style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px' }}>
+      <main className="main-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px' }}>
         {/* Welcome Section */}
-        <div style={{ marginBottom: 40 }}>
+        <div style={{ marginBottom: 32 }}>
           <div style={{
             fontSize: 11,
             fontWeight: 600,
@@ -306,7 +539,7 @@ function Dashboard() {
           }}>
             IMACS CDAH PLATFORM
           </div>
-          <h1 style={{
+          <h1 className="welcome-title" style={{
             fontSize: 32,
             fontWeight: 700,
             color: '#0F172A',
@@ -315,7 +548,7 @@ function Dashboard() {
             Welcome back, {user?.name}
           </h1>
           <p style={{
-            fontSize: 16,
+            fontSize: 15,
             color: '#64748B',
             margin: 0,
             maxWidth: 640,
@@ -327,7 +560,7 @@ function Dashboard() {
 
         {/* Account Information */}
         <div style={{
-          marginBottom: 40,
+          marginBottom: 32,
           background: '#FFFFFF',
           borderRadius: 12,
           padding: 20,
@@ -343,7 +576,7 @@ function Dashboard() {
           }}>
             Account Information
           </h3>
-          <div style={{
+          <div className="account-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
             gap: 20
@@ -356,7 +589,7 @@ function Dashboard() {
             </div>
             <div>
               <div style={{ fontSize: 11, color: '#94A3B8', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.03em' }}>Email</div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
+              <div style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', wordBreak: 'break-all' }}>
                 {user?.email}
               </div>
             </div>
@@ -392,7 +625,7 @@ function Dashboard() {
         </div>
 
         {/* Platform Cards */}
-        <div style={{
+        <div className="platform-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
           gap: 24
@@ -423,7 +656,7 @@ function Dashboard() {
                 {/* Card Header */}
                 <div style={{
                   background: platform.bgGradient,
-                  padding: '28px 24px',
+                  padding: '24px 20px',
                   position: 'relative',
                   overflow: 'hidden'
                 }}>
@@ -449,21 +682,21 @@ function Dashboard() {
 
                   <div style={{ position: 'relative', zIndex: 1 }}>
                     <div style={{
-                      width: 48,
-                      height: 48,
+                      width: 44,
+                      height: 44,
                       background: 'rgba(255,255,255,0.2)',
                       borderRadius: 10,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      marginBottom: 14
+                      marginBottom: 12
                     }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 24, color: '#FFFFFF' }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 22, color: '#FFFFFF' }}>
                         {platform.icon}
                       </span>
                     </div>
                     <h2 style={{
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: 700,
                       color: '#FFFFFF',
                       margin: 0
@@ -475,7 +708,7 @@ function Dashboard() {
 
                 {/* Card Body */}
                 <div style={{
-                  padding: 24,
+                  padding: 20,
                   flex: 1,
                   display: 'flex',
                   flexDirection: 'column'
@@ -495,7 +728,7 @@ function Dashboard() {
                     flexWrap: 'wrap',
                     gap: 6,
                     marginBottom: 'auto',
-                    paddingBottom: 20
+                    paddingBottom: 16
                   }}>
                     {platform.features.map((feature, i) => (
                       <span
@@ -522,14 +755,14 @@ function Dashboard() {
                       rel="noopener noreferrer"
                       style={{
                         width: '100%',
-                        padding: '14px 24px',
+                        padding: '12px 20px',
                         background: isHovered
                           ? `linear-gradient(135deg, ${platform.color} 0%, ${platform.color}DD 100%)`
                           : platform.bgGradient,
                         color: '#FFFFFF',
                         border: 'none',
                         borderRadius: 10,
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: 600,
                         cursor: 'pointer',
                         display: 'flex',
@@ -545,7 +778,7 @@ function Dashboard() {
                       }}
                     >
                       Launch Platform
-                      <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
                         arrow_forward
                       </span>
                     </a>
@@ -554,12 +787,12 @@ function Dashboard() {
                       disabled
                       style={{
                         width: '100%',
-                        padding: '14px 24px',
+                        padding: '12px 20px',
                         background: '#E2E8F0',
                         color: '#94A3B8',
                         border: 'none',
                         borderRadius: 10,
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: 600,
                         cursor: 'not-allowed',
                         display: 'flex',
@@ -568,7 +801,7 @@ function Dashboard() {
                         gap: 8
                       }}
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
                         lock
                       </span>
                       Access Restricted
@@ -581,7 +814,7 @@ function Dashboard() {
         </div>
 
         {/* Help Section */}
-        <div style={{
+        <div className="help-section" style={{
           marginTop: 24,
           padding: 20,
           background: '#F8FAFC',
