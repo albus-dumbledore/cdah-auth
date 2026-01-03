@@ -633,10 +633,17 @@ function Dashboard() {
           {PLATFORMS.map((platform) => {
             const hasAccess = canAccessPlatform(platform)
             const isHovered = hoveredCard === platform.id && hasAccess
+            const CardWrapper = hasAccess ? 'a' : 'div'
+            const cardProps = hasAccess ? {
+              href: getPlatformUrl(platform),
+              target: '_blank',
+              rel: 'noopener noreferrer'
+            } : {}
 
             return (
-              <div
+              <CardWrapper
                 key={platform.id}
+                {...cardProps}
                 style={{
                   background: '#FFFFFF',
                   borderRadius: 16,
@@ -648,7 +655,10 @@ function Dashboard() {
                   opacity: hasAccess ? 1 : 0.6,
                   transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
                   display: 'flex',
-                  flexDirection: 'column'
+                  flexDirection: 'column',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  cursor: hasAccess ? 'pointer' : 'default'
                 }}
                 onMouseEnter={() => setHoveredCard(platform.id)}
                 onMouseLeave={() => setHoveredCard(null)}
@@ -749,10 +759,7 @@ function Dashboard() {
 
                   {/* Action Button - aligned at bottom */}
                   {hasAccess ? (
-                    <a
-                      href={getPlatformUrl(platform)}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <span
                       style={{
                         width: '100%',
                         padding: '12px 20px',
@@ -764,13 +771,11 @@ function Dashboard() {
                         borderRadius: 10,
                         fontSize: 14,
                         fontWeight: 600,
-                        cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: 8,
                         transition: 'all 0.2s ease',
-                        textDecoration: 'none',
                         boxSizing: 'border-box',
                         boxShadow: isHovered
                           ? '0 4px 12px rgba(0,0,0,0.15)'
@@ -781,10 +786,9 @@ function Dashboard() {
                       <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
                         arrow_forward
                       </span>
-                    </a>
+                    </span>
                   ) : (
-                    <button
-                      disabled
+                    <span
                       style={{
                         width: '100%',
                         padding: '12px 20px',
@@ -794,7 +798,6 @@ function Dashboard() {
                         borderRadius: 10,
                         fontSize: 14,
                         fontWeight: 600,
-                        cursor: 'not-allowed',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -805,10 +808,10 @@ function Dashboard() {
                         lock
                       </span>
                       Access Restricted
-                    </button>
+                    </span>
                   )}
                 </div>
-              </div>
+              </CardWrapper>
             )
           })}
         </div>

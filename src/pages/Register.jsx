@@ -237,8 +237,13 @@ function Register() {
                 color: '#00695C',
                 textDecoration: 'underline',
                 cursor: 'pointer',
-                padding: 0,
-                font: 'inherit'
+                padding: '8px 4px',
+                margin: '-8px -4px',
+                font: 'inherit',
+                borderRadius: '4px',
+                minHeight: '44px',
+                display: 'inline-flex',
+                alignItems: 'center'
               }}
             >
               Read more
@@ -351,8 +356,15 @@ function Register() {
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  padding: '4px',
-                  color: '#546E7A'
+                  padding: '12px',
+                  color: '#546E7A',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minWidth: '44px',
+                  minHeight: '44px',
+                  margin: '-8px -8px 0 0'
                 }}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
